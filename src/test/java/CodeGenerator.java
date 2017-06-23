@@ -14,7 +14,7 @@ import java.util.*;
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  */
 public abstract class CodeGenerator {
-    //JDBC配置
+    //JDBC配置，请修改为你项目的实际配置
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
     private static final String JDBC_USERNAME = "root";
     private static final String JDBC_PASSWORD = "123456";
