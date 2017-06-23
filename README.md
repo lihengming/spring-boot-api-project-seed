@@ -4,11 +4,11 @@ Spring Boot API Project Seed 是一个基础Spring Boot&MyBatis的模板项目�
 
 #### 特征
 
-[X] 统一JSON响应结果封装及生成工具
-[X] 统一异常处理
-[X] 基础方法（CRUD）Service 抽象封装
-[X] 基于通用Mapper插件、PageHelper实现单表业务零SQL
-[X] 基础代码使用模板直接生成（Model、Mapper、MapperXML、Service、Controller），可根据自己的业务定制模板，摆脱重复劳动
+- [X] 统一JSON响应结果封装及生成工具
+- [X] 统一异常处理
+- [X] 基础方法（CRUD）Service 抽象封装
+- [X] 基于通用Mapper插件、PageHelper实现单表业务零SQL
+- [X] 基础代码使用模板直接生成（Model、Mapper、MapperXML、Service、Controller），可根据自己的业务定制模板，摆脱重复劳动
 
 ### 快速开始
 1. 克隆项目
