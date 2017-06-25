@@ -14,7 +14,7 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 ### 快速开始
 1. 克隆项目
 2. 对```test```包内的代码生成器```CodeGenerator```进行配置，主要是JDBC，因为要根据表名来生成代码
-3. 如果只是简单的试试，可以使用test resources 下的 demo-user.sql来创建一个简单的用户表，否则忽略该步
+3. 如果只是想根据上面的演示来亲自试试的话可以使用test resources 下的的```demo-user.sql```，否则忽略该步
 3. 输入表名，运行```CodeGenerator.mian()```方法，刷新项目目录，基础代码（Model、Mapper、MapperXML、Service、Controller)即生成成功
 4. 根据业务在基础代码上进行扩展即可
 5. 对开发环境配置文件```application-dev.properties```进行配置，启动项目，Have Fun！
@@ -23,12 +23,11 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 - 表名，应使用小写，多个单词使用下划线拼接
 - Model内成员变量建议于表字段相等，如需扩展成员变量(比如连表查询)，建议创建DTO，否则需在对应字段上加@Transist注解，详情见[通用Mapper插件文档说明]。
 - 建议业务失败使用```ServiceException```抛出，由统一异常处理器来封装JSON结果，比如```throw new ServiceException("该手机号已存在")```，会直接被封装为```{"code":400,"message":"该手机号已存在"}```返回，无需自己处理，尽情抛出。
-```json
 - 开发规范建议遵循阿里巴巴开发手册（[最新版下载]())
  
 ### 技术选型&文档
-- Spring Boot（[查看文档](http://docs.spring.io/spring-boot/docs/1.5.3.RELEASE/reference/htmlsingle/)）
-- MyBatis （[查看中文文档](http://www.mybatis.org/mybatis-3/zh/index.html)）
-- MyBatis Mapper插件 （[查看中文文档](http://www.mybatis.tk/)）
-- MyBatis PageHelper分页插件 （[查看中文文档](http://www.mybatis.tk/)）
+- Spring Boot（[查看Spring Boot学习&使用指南](http://www.jianshu.com/p/1a9fd8936bd8)）
+- MyBatis （[查看官方中文文档](http://www.mybatis.org/mybatis-3/zh/index.html)）
+- MyBatis 通用Mapper插件 （[查看官方中文文档](https://mapperhelper.github.io/docs/)）
+- MyBatis PageHelper分页插件 （[查看官方中文文档](https://pagehelper.github.io/)）
 - 其他略
