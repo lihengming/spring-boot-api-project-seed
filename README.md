@@ -20,14 +20,14 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 5. 对开发环境配置文件```application-dev.properties```进行配置，启动项目，Have Fun！
  
 ### 开发建议
-- 表名，应使用小写，多个单词使用下划线拼接
-- Model内成员变量建议于表字段相等，如需扩展成员变量(比如连表查询)，建议创建DTO，否则需在对应字段上加@Transist注解，详情见[通用Mapper插件文档说明]。
-- 建议业务失败使用```ServiceException```抛出，由统一异常处理器来封装JSON结果，比如```throw new ServiceException("该手机号已存在")```，会直接被封装为```{"code":400,"message":"该手机号已存在"}```返回，无需自己处理，尽情抛出。
-- 开发规范建议遵循阿里巴巴开发手册（[最新版下载]())
+- 表名，应使用小写，多个单词使用下划线拼接
+- Model内成员变量建议于表字段相等，如需扩展成员变量(比如连表查询)，建议创建DTO，否则需在对应字段上加@Transist注解，详情见[通用Mapper插件文档说明]。
+- 建议业务失败使用```ServiceException(""message")```抛出，由统一异常处理器来封装JSON结果，比如```throw new ServiceException("该手机号已存在")```，会直接被封装为```{"code":400,"message":"该手机号已存在"}```返回，无需自己处理，尽情抛出。
+- 开发规范建议遵循阿里巴巴开发手册（[最新版下载]())
  
 ### 技术选型&文档
 - Spring Boot（[查看Spring Boot学习&使用指南](http://www.jianshu.com/p/1a9fd8936bd8)）
-- MyBatis （[查看官方中文文档](http://www.mybatis.org/mybatis-3/zh/index.html)）
-- MyBatis 通用Mapper插件 （[查看官方中文文档](https://mapperhelper.github.io/docs/)）
-- MyBatis PageHelper分页插件 （[查看官方中文文档](https://pagehelper.github.io/)）
-- 其他略
+- MyBatis（[查看官方中文文档](http://www.mybatis.org/mybatis-3/zh/index.html)）
+- MyBatisb通用Mapper插件（[查看官方中文文档](https://mapperhelper.github.io/docs/)）
+- MyBatis PageHelper分页插件（[查看官方中文文档](https://pagehelper.github.io/)）
+- 其他略
