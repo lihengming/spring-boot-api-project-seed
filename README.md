@@ -7,7 +7,8 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 - 统一响应结果封装及生成工具
 - 统一异常处理
 - 常用基础方法抽象封装
-- 集成MyBatis、通用Mapper插件、PageHelper分页插件，实现单表业务零SQL（相关使用文档在最下面有地址)
+- 使用Druid Spring Boot Starter 集成Druid连接池与监控
+- 集成MyBatis、通用Mapper插件、PageHelper分页插件，实现单表业务零SQL
 - 提供代码生成器根据表名生成对应的Model、Mapper、MapperXML、Service、ServiceImpl、Controller（默认提供post和restful两套Controller模板)等基础代码，代码模板可根据实际项目的需求来定制，以便渐少重复劳动（由于每个公司业务都不太一样，所以只提供了一些简单的通用方法模板，主要是提供一个思路来减少重复代码的编写，在我们公司的使用中，其实根据业务的抽象编写了大量的代码模板，下次再做类似的项目几天就完工了)
 - 另有彩蛋，待你探索
  
@@ -30,4 +31,5 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 - MyBatis（[查看官方中文文档](http://www.mybatis.org/mybatis-3/zh/index.html)）
 - MyBatisb通用Mapper插件（[查看官方中文文档](https://mapperhelper.github.io/docs/)）
 - MyBatis PageHelper分页插件（[查看官方中文文档](https://pagehelper.github.io/)）
+- Druid Spring Boot Starter（[查看官方中文文档](https://github.com/alibaba/druid/tree/master/druid-spring-boot-starter/)）
 - 其他略
