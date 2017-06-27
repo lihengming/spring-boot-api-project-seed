@@ -10,21 +10,21 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 - 常用基础方法抽象封装
 - 使用Druid Spring Boot Starter 集成Druid连接池与监控
 - 集成MyBatis、通用Mapper插件、PageHelper分页插件，实现单表业务零SQL
-- 提供代码生成器根据表名生成对应的Model、Mapper、MapperXML、Service、ServiceImpl、Controller（默认提供post和restful两套Controller模板)等基础代码，代码模板可根据实际项目的需求来定制，以便渐少重复劳动（由于每个公司业务都不太一样，所以只提供了一些简单的通用方法模板，主要是提供一个思路来减少重复代码的编写，在我们公司的使用中，其实根据业务的抽象编写了大量的代码模板，下次再做类似的项目几天就完工了)
+- 提供代码生成器根据表名生成对应的Model、Mapper、MapperXML、Service、ServiceImpl、Controller（```默认提供POST和RESTFul两套Controller模板，根据需要在CodeGenerator自己选择，默认是纯POST的```)等基础代码，代码模板可根据实际项目的需求来定制，以便渐少重复劳动（```由于每个公司业务都不太一样，所以只提供了一些简单的通用方法模板，主要是提供一个思路来减少重复代码的编写，在我们公司的使用中，其实根据业务的抽象编写了大量的代码模板，下次再做类似的项目几天就完工了```)
 - 另有彩蛋，待你探索
  
 ## 快速开始
 1. 克隆项目
 2. 对```test```包内的代码生成器```CodeGenerator```进行配置，主要是JDBC，因为要根据表名来生成代码
 3. 如果只是想根据上面的演示来亲自试试的话可以使用test resources 下的的```demo-user.sql```，否则忽略该步
-3. 输入表名，运行```CodeGenerator.mian()```方法，刷新项目目录，基础代码（Model、Mapper、MapperXML、Service、Controller)即生成成功
+3. 输入表名，运行```CodeGenerator.mian()```方法，生成基础代码，可能需要刷新项目目录才会出来
 4. 根据业务在基础代码上进行扩展即可
 5. 对开发环境配置文件```application-dev.properties```进行配置，启动项目，Have Fun！
  
 ## 开发建议
 - 表名，应使用小写，多个单词使用下划线拼接
-- Model内成员变量建议于表字段相等，如需扩展成员变量（比如连表查询），建议创建DTO，否则需在对应字段上加```@Transient```注解，详情见[通用Mapper插件文档说明](https://mapperhelper.github.io/docs/2.use/)。
-- 建议业务失败使用```ServiceException(""message")```抛出，由统一异常处理器来封装JSON结果，比如```throw new ServiceException("该手机号已存在")```，会直接被封装为```{"code":400,"message":"该手机号已存在"}```返回，无需自己处理，尽情抛出。
+- Model内成员变量建议于表字段相等，如需扩展成员变量（比如连表查询），建议创建DTO，否则需在对应字段上加```@Transient```注解，详情见[通用Mapper插件文档说明](https://mapperhelper.github.io/docs/2.use/)
+- 建议业务失败使用```ServiceException(""message")```抛出，由统一异常处理器来封装JSON结果，比如```throw new ServiceException("该手机号已存在")```，会直接被封装为```{"code":400,"message":"该手机号已存在"}```返回，无需自己处理，尽情抛出
 - 开发规范建议遵循阿里巴巴Java开发手册（[最新版下载](https://github.com/lihengming/shared-files/blob/master/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4Java%E5%BC%80%E5%8F%91%E6%89%8B%E5%86%8Cv1.2.0.pdf))
  
 ## 技术选型&文档
