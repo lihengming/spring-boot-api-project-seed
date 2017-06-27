@@ -7,6 +7,7 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 - 最佳实践的项目结构、配置文件及精简的Maven依赖（[查看项目结构图](https://github.com/lihengming/shared-files/blob/master/project-struct.png)）
 - 统一响应结果封装及生成工具
 - 统一异常处理
+- 简单的接口签名认证
 - 常用基础方法抽象封装
 - 使用Druid Spring Boot Starter 集成Druid连接池与监控
 - 集成MyBatis、通用Mapper插件、PageHelper分页插件，实现单表业务零SQL
