@@ -1,8 +1,6 @@
 ## 简介
 Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目，用于快速构建纯API的项目（中小型项目)，该种子项目已经有过多个真实项目的实践，稳定、简单、快速，使我们摆脱那些重复劳动，专注于业务代码编写，减少加班。下面是一个简单的使用演示，看如何基于本项目在短短几十秒钟内实现一套简单的API，并运行提供服务。
-
-[![请选择超清](https://raw.githubusercontent.com/lihengming/shared-files/master/project-example-youku.png)](http://v.youku.com/v_show/id_XMjg1MDc5NDc4OA==.html?spm=a2h3j.8428770.3416059.1)
-
+<embed src='http://player.youku.com/player.php/sid/XMjg1MDc5NDc4OA==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed>
 ## 特征&提供
 - 最佳实践的项目结构、配置文件及精简的Maven依赖（[查看项目结构图](https://github.com/lihengming/shared-files/blob/master/project-struct.png)）
 - 统一响应结果封装及生成工具
