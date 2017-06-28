@@ -10,7 +10,7 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 - 统一异常处理
 - 简单的接口签名认证
 - 常用基础方法抽象封装
-- 使用Druid Spring Boot Starter 集成Druid连接池与监控
+- 使用Druid Spring Boot Starter 集成Druid数据库连接池与监控
 - 使用FastJsonHttpMessageConverter，提高JSON序列化速度
 - 集成MyBatis、通用Mapper插件、PageHelper分页插件，实现单表业务零SQL
 - 提供代码生成器根据表名生成对应的Model、Mapper、MapperXML、Service、ServiceImpl、Controller等基础代码，其中Controller模板默认提供POST和RESTful两套，根据需求在```CodeGenerator.genController(tableName)```方法中自己选择，默认使用POST模板。代码模板可根据实际项目的需求来扩展，由于每个公司业务都不太一样，所以只提供了一些比较基础、通用的模板，主要是提供一个思路来减少重复代码的编写，在我们公司的使用中，其实根据业务的抽象编写了大量的代码模板
