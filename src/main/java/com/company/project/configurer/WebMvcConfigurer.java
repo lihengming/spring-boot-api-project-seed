@@ -4,7 +4,7 @@ package com.company.project.configurer;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonpHttpMessageConverter4;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
 import com.company.project.core.ServiceException;
@@ -45,7 +45,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     //使用阿里 FastJson 作为JSON MessageConverter
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        FastJsonpHttpMessageConverter4 converter = new FastJsonpHttpMessageConverter4();
+        FastJsonHttpMessageConverter4 converter = new FastJsonHttpMessageConverter4();
         FastJsonConfig config = new FastJsonConfig();
         config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,//保留空的字段
                 SerializerFeature.WriteNullStringAsEmpty,//String null -> ""
