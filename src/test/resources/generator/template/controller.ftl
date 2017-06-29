@@ -48,7 +48,7 @@ public class ${modelNameUpperCamel}Controller {
     @PostMapping("/list")
     public Result list(Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<User> list = userService.findAll();
+        List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }
