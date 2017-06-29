@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  */
-public abstract class CodeGenerator {
+public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
     private static final String JDBC_USERNAME = "root";
@@ -50,61 +50,63 @@ public abstract class CodeGenerator {
 
 
     public static void genModelAndMapper(String tableName) {
+        Context context = new Context(ModelType.FLAT);
+        context.setId("Potato");
+        context.setTargetRuntime("MyBatis3Simple");
+        context.addProperty(PropertyRegistry.CONTEXT_BEGINNING_DELIMITER, "`");
+        context.addProperty(PropertyRegistry.CONTEXT_ENDING_DELIMITER, "`");
+
+        JDBCConnectionConfiguration jdbcConnectionConfiguration = new JDBCConnectionConfiguration();
+        jdbcConnectionConfiguration.setConnectionURL(JDBC_URL);
+        jdbcConnectionConfiguration.setUserId(JDBC_USERNAME);
+        jdbcConnectionConfiguration.setPassword(JDBC_PASSWORD);
+        jdbcConnectionConfiguration.setDriverClass(JDBC_DIVER_CLASS_NAME);
+        context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
+
+        PluginConfiguration pluginConfiguration = new PluginConfiguration();
+        pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
+        pluginConfiguration.addProperty("mappers", ProjectConstant.MAPPER_INTERFACE_REFERENCE);
+        context.addPluginConfiguration(pluginConfiguration);
+
+        JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
+        javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
+        javaModelGeneratorConfiguration.setTargetPackage(ProjectConstant.MODEL_PACKAGE);
+        context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
+
+        SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
+        sqlMapGeneratorConfiguration.setTargetProject(PROJECT_PATH + RESOURCES_PATH);
+        sqlMapGeneratorConfiguration.setTargetPackage("mapper");
+        context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
+
+        JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
+        javaClientGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
+        javaClientGeneratorConfiguration.setTargetPackage(ProjectConstant.MAPPER_PACKAGE);
+        javaClientGeneratorConfiguration.setConfigurationType("XMLMAPPER");
+        context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration);
+
+        TableConfiguration tableConfiguration = new TableConfiguration(context);
+        tableConfiguration.setTableName(tableName);
+        tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
+        context.addTableConfiguration(tableConfiguration);
+
+        List<String> warnings;
+        MyBatisGenerator generator;
         try {
-            List<String> warnings = new ArrayList<String>();
-            boolean overwrite = true;
-            Context context = new Context(ModelType.FLAT);
-            context.setId("Potato");
-            context.setTargetRuntime("MyBatis3Simple");
-            context.addProperty(PropertyRegistry.CONTEXT_BEGINNING_DELIMITER, "`");
-            context.addProperty(PropertyRegistry.CONTEXT_ENDING_DELIMITER, "`");
-
-            JDBCConnectionConfiguration jdbcConnectionConfiguration = new JDBCConnectionConfiguration();
-            jdbcConnectionConfiguration.setConnectionURL(JDBC_URL);
-            jdbcConnectionConfiguration.setUserId(JDBC_USERNAME);
-            jdbcConnectionConfiguration.setPassword(JDBC_PASSWORD);
-            jdbcConnectionConfiguration.setDriverClass(JDBC_DIVER_CLASS_NAME);
-            context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
-
-            PluginConfiguration pluginConfiguration = new PluginConfiguration();
-            pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
-            pluginConfiguration.addProperty("mappers", ProjectConstant.MAPPER_INTERFACE_REFERENCE);
-            context.addPluginConfiguration(pluginConfiguration);
-
-            JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
-            javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
-            javaModelGeneratorConfiguration.setTargetPackage(ProjectConstant.MODEL_PACKAGE);
-            context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
-
-            SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
-            sqlMapGeneratorConfiguration.setTargetProject(PROJECT_PATH + RESOURCES_PATH);
-            sqlMapGeneratorConfiguration.setTargetPackage("mapper");
-            context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
-
-            JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
-            javaClientGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
-            javaClientGeneratorConfiguration.setTargetPackage(ProjectConstant.MAPPER_PACKAGE);
-            javaClientGeneratorConfiguration.setConfigurationType("XMLMAPPER");
-            context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration);
-
-            TableConfiguration tableConfiguration = new TableConfiguration(context);
-            tableConfiguration.setTableName(tableName);
-            tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
-            context.addTableConfiguration(tableConfiguration);
-
-
-            DefaultShellCallback callback = new DefaultShellCallback(overwrite);
             Configuration config = new Configuration();
             config.addContext(context);
             config.validate();
-            MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
-            myBatisGenerator.generate(null);
-            String modelName = tableNameConvertUpperCamel(tableName);
-            System.out.println(modelName + ".java 生成成功");
-            System.out.println(modelName + "Mapper.java 生成成功");
-            System.out.println(modelName + "Mapper.xml 生成成功");
+
+            boolean overwrite = true;
+            DefaultShellCallback callback = new DefaultShellCallback(overwrite);
+            warnings = new ArrayList<String>();
+            generator = new MyBatisGenerator(config, callback, warnings);
+            generator.generate(null);
         } catch (Exception e) {
             throw new RuntimeException("生成Model和Mapper失败", e);
+        }
+
+        if (generator.getGeneratedJavaFiles().isEmpty() || generator.getGeneratedXmlFiles().isEmpty()) {
+            throw new RuntimeException("生成Model和Mapper失败：" + warnings);
         }
     }
 
@@ -158,6 +160,7 @@ public abstract class CodeGenerator {
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
+            //cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
             cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
 
             System.out.println(modelNameUpperCamel + "Controller.java 生成成功");
