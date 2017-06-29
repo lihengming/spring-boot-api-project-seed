@@ -38,7 +38,6 @@ public class CodeGenerator {
         genCode("输入表名");
     }
 
-
     public static void genCode(String... tableNames) {
         for (String tableName : tableNames) {
             //根据需求生成，不需要的注掉，模板有问题的话可以自己修改。
@@ -47,7 +46,6 @@ public class CodeGenerator {
             genController(tableName);
         }
     }
-
 
     public static void genModelAndMapper(String tableName) {
         Context context = new Context(ModelType.FLAT);
@@ -155,7 +153,6 @@ public class CodeGenerator {
             data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
             data.put("basePackage", ProjectConstant.BASE_PACKAGE);
 
-
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_CONTROLLER + modelNameUpperCamel + "Controller.java");
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
@@ -177,7 +174,6 @@ public class CodeGenerator {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
         return cfg;
     }
-
 
     private static String tableNameConvertLowerCamel(String tableName) {
         StringBuilder result = new StringBuilder();
@@ -205,7 +201,6 @@ public class CodeGenerator {
         return camel.substring(0, 1).toUpperCase() + camel.substring(1);
 
     }
-
 
     private static String tableNameConvertMappingPath(String tableName) {
         return "/" + (tableName.contains("_") ? tableName.replaceAll("_", "/") : tableName);
