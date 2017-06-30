@@ -209,6 +209,7 @@ public class CodeGenerator {
     }
 
     private static String tableNameConvertMappingPath(String tableName) {
+        tableName = tableName.toLowerCase();//兼容使用大写的表名
         return "/" + (tableName.contains("_") ? tableName.replaceAll("_", "/") : tableName);
     }
 
