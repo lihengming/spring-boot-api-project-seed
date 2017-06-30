@@ -28,7 +28,7 @@ public class ${modelNameUpperCamel}Controller {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
-        userService.deleteById(id);
+        ${modelNameLowerCamel}Service.deleteById(id);
         return ResultGenerator.genSuccessResult();
     }
 
