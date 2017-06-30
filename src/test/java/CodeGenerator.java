@@ -1,4 +1,3 @@
-import com.company.project.core.ProjectConstant;
 import freemarker.template.TemplateExceptionHandler;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.*;
@@ -9,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.company.project.core.ProjectConstant.*;
 
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
@@ -26,10 +27,9 @@ public class CodeGenerator {
     private static final String JAVA_PATH = "\\src\\main\\java"; //java文件路径
     private static final String RESOURCES_PATH = "\\src\\main\\resources";//资源文件路径
 
-    private static final String BASE_PACKAGE_PATH = "\\com\\company\\project";//项目基础包路径
-    private static final String PACKAGE_PATH_SERVICE = BASE_PACKAGE_PATH + "\\service\\";//生成的Service存放路径
-    private static final String PACKAGE_PATH_SERVICE_IMPL = BASE_PACKAGE_PATH + "\\service\\impl\\";//生成的Service实现存放路径
-    private static final String PACKAGE_PATH_CONTROLLER = BASE_PACKAGE_PATH + "\\web\\";//生成的Controller实现存放路径
+    private static final String PACKAGE_PATH_SERVICE = packageConvertPath(SERVICE_PACKAGE);//生成的Service存放路径
+    private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);//生成的Service实现存放路径
+    private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
 
     private static final String AUTHOR = "CodeGenerator";//@author
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
@@ -63,12 +63,12 @@ public class CodeGenerator {
 
         PluginConfiguration pluginConfiguration = new PluginConfiguration();
         pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
-        pluginConfiguration.addProperty("mappers", ProjectConstant.MAPPER_INTERFACE_REFERENCE);
+        pluginConfiguration.addProperty("mappers", MAPPER_INTERFACE_REFERENCE);
         context.addPluginConfiguration(pluginConfiguration);
 
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
         javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
-        javaModelGeneratorConfiguration.setTargetPackage(ProjectConstant.MODEL_PACKAGE);
+        javaModelGeneratorConfiguration.setTargetPackage(MODEL_PACKAGE);
         context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
 
         SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
@@ -78,7 +78,7 @@ public class CodeGenerator {
 
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
         javaClientGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
-        javaClientGeneratorConfiguration.setTargetPackage(ProjectConstant.MAPPER_PACKAGE);
+        javaClientGeneratorConfiguration.setTargetPackage(MAPPER_PACKAGE);
         javaClientGeneratorConfiguration.setConfigurationType("XMLMAPPER");
         context.setJavaClientGeneratorConfiguration(javaClientGeneratorConfiguration);
 
@@ -106,6 +106,11 @@ public class CodeGenerator {
         if (generator.getGeneratedJavaFiles().isEmpty() || generator.getGeneratedXmlFiles().isEmpty()) {
             throw new RuntimeException("生成Model和Mapper失败：" + warnings);
         }
+
+        String modelName = tableNameConvertUpperCamel(tableName);
+        System.out.println(modelName + ".java 生成成功");
+        System.out.println(modelName + "Mapper.java 生成成功");
+        System.out.println(modelName + "Mapper.xml 生成成功");
     }
 
     public static void genService(String tableName) {
@@ -118,7 +123,7 @@ public class CodeGenerator {
             String modelNameUpperCamel = tableNameConvertUpperCamel(tableName);
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
-            data.put("basePackage", ProjectConstant.BASE_PACKAGE);
+            data.put("basePackage", BASE_PACKAGE);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_SERVICE + modelNameUpperCamel + "Service.java");
             if (!file.getParentFile().exists()) {
@@ -151,7 +156,7 @@ public class CodeGenerator {
             String modelNameUpperCamel = tableNameConvertUpperCamel(tableName);
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
-            data.put("basePackage", ProjectConstant.BASE_PACKAGE);
+            data.put("basePackage", BASE_PACKAGE);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_CONTROLLER + modelNameUpperCamel + "Controller.java");
             if (!file.getParentFile().exists()) {
@@ -206,4 +211,7 @@ public class CodeGenerator {
         return "/" + (tableName.contains("_") ? tableName.replaceAll("_", "/") : tableName);
     }
 
+    private static String packageConvertPath(String packageName) {
+        return String.format("\\%s\\", packageName.contains(".") ? packageName.replaceAll("\\.", "\\\\") : packageName);
+    }
 }
