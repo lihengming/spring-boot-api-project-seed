@@ -183,6 +183,7 @@ public class CodeGenerator {
     private static String tableNameConvertLowerCamel(String tableName) {
         StringBuilder result = new StringBuilder();
         if (tableName != null && tableName.length() > 0) {
+            tableName = tableName.toLowerCase();//兼容使用大写的表名
             boolean flag = false;
             for (int i = 0; i < tableName.length(); i++) {
                 char ch = tableName.charAt(i);
