@@ -49,10 +49,10 @@ public abstract class AbstractService<T> implements Service<T> {
     }
 
     @Override
-    public T findBy(String property, Object value) throws TooManyResultsException {
+    public T findBy(String fieldName, Object value) throws TooManyResultsException {
         try {
             T model = modelClass.newInstance();
-            Field field = modelClass.getDeclaredField(property);
+            Field field = modelClass.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(model, value);
             return mapper.selectOne(model);
