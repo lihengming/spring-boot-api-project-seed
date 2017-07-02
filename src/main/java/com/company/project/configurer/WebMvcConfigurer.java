@@ -101,15 +101,14 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //接口签名认证拦截器，该签名认证比较简单，实际项目中建议使用Json Web Token代替。
+        //接口签名认证拦截器，该签名认证比较简单，实际项目中可以使用Json Web Token或其他更好的方式替代。
         if (!StringUtils.contains(env, "dev")) { //开发环境忽略签名认证
             registry.addInterceptor(new HandlerInterceptorAdapter() {
-
                 @Override
                 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-                    String sign = request.getParameter("sign");
                     //验证签名
-                    if (StringUtils.isNotEmpty(sign) && validateSign(request, sign)) {
+                    boolean pass = validateSign(request);
+                    if (pass) {
                         return true;
                     } else {
                         logger.warn("签名认证失败，请求接口：{}，请求IP：{}，请求参数：{}",
@@ -137,32 +136,31 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     }
 
     /**
-     * 一个简单的签名认证，规则：请求参数按ASCII码排序后，拼接为a=value&b=value...这样的字符串后进行MD5
-     *
-     * @param request
-     * @param requestSign
-     * @return
+     * 一个简单的签名认证，规则：
+     * 1. 将请求参数按ascii码排序
+     * 2. 拼接为a=value&b=value...这样的字符串（不包含sign）
+     * 3. 混合密钥（secret）进行md5获得签名，与请求的签名进行比较
      */
-    private boolean validateSign(HttpServletRequest request, String requestSign) {
-        List<String> keys = new ArrayList<String>(request.getParameterMap().keySet());
-        Collections.sort(keys);
-
-        String linkString = "";
-
-        for (String key : keys) {
-            if (!"sign".equals(key)) {
-                linkString += key + "=" + request.getParameter(key) + "&";
-            }
-        }
-        if (StringUtils.isEmpty(linkString))
+    private boolean validateSign(HttpServletRequest request) {
+        String requestSign = request.getParameter("sign");//获得请求签名，如sign=19e907700db7ad91318424a97c54ed57
+        if (StringUtils.isEmpty(requestSign)) {
             return false;
+        }
+        List<String> keys = new ArrayList<String>(request.getParameterMap().keySet());
+        keys.remove("sign");//排除sign参数
+        Collections.sort(keys);//排序
 
-        linkString = linkString.substring(0, linkString.length() - 1);
-        String key = "Potato";//自己修改
-        String sign = DigestUtils.md5Hex(linkString + key);
+        StringBuilder sb = new StringBuilder();
+        for (String key : keys) {
+            sb.append(key).append("=").append(request.getParameter(key)).append("&");//拼接字符串
+        }
+        String linkString = sb.toString();
+        linkString = StringUtils.substring(linkString, 0, linkString.length() - 1);//去除最后一个'&'
 
-        return StringUtils.equals(sign, requestSign);
+        String secret = "Potato";//密钥，自己修改
+        String sign = DigestUtils.md5Hex(linkString + secret);//混合密钥md5
 
+        return StringUtils.equals(sign, requestSign);//比较
     }
 
     private String getIpAddress(HttpServletRequest request) {
@@ -182,7 +180,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
-        // 如果是多级代理，那么取第一个ip为客户ip
+        // 如果是多级代理，那么取第一个ip为客户端ip
         if (ip != null && ip.indexOf(",") != -1) {
             ip = ip.substring(0, ip.indexOf(",")).trim();
         }
