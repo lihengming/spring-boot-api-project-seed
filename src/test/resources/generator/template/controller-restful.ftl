@@ -37,6 +37,7 @@ public class ${modelNameUpperCamel}Controller {
         ${modelNameLowerCamel}Service.update(${modelNameLowerCamel});
         return ResultGenerator.genSuccessResult();
     }
+
     @GetMapping("/{id}")
     public Result detail(@PathVariable Integer id) {
         ${modelNameUpperCamel} ${modelNameLowerCamel} = ${modelNameLowerCamel}Service.findById(id);
@@ -44,7 +45,7 @@ public class ${modelNameUpperCamel}Controller {
     }
 
     @GetMapping
-    public Result list(Integer page, Integer size) {
+    public Result list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {
         PageHelper.startPage(page, size);
         List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
         PageInfo pageInfo = new PageInfo(list);
