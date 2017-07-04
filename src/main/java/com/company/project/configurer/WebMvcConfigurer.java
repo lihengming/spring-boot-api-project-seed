@@ -71,6 +71,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 } else if (e instanceof ServletException) {
                     result.setCode(ResultCode.FAIL).setMessage(e.getMessage());
                 } else {
+                    result.setCode(ResultCode.INTERNAL_SERVER_ERROR).setMessage("接口 [" + request.getRequestURI() + "] 内部错误，请联系管理员");
                     String message;
                     if (handler instanceof HandlerMethod) {
                         HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -82,8 +83,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                     } else {
                         message = e.getMessage();
                     }
-                    result.setCode(ResultCode.INTERNAL_SERVER_ERROR).setMessage(message);
-                    logger.error(e.getMessage(), e);
+                    logger.error(message, e);
                 }
                 responseResult(response, result);
                 return new ModelAndView();
