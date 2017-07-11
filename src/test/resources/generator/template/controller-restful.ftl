@@ -1,5 +1,4 @@
 package ${basePackage}.web;
-
 import ${basePackage}.core.Result;
 import ${basePackage}.core.ResultGenerator;
 import ${basePackage}.model.${modelNameUpperCamel};
@@ -21,7 +20,7 @@ public class ${modelNameUpperCamel}Controller {
     private ${modelNameUpperCamel}Service ${modelNameLowerCamel}Service;
 
     @PostMapping
-    public Result add(${modelNameUpperCamel} ${modelNameLowerCamel}) {
+    public Result add(@RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}) {
         ${modelNameLowerCamel}Service.save(${modelNameLowerCamel});
         return ResultGenerator.genSuccessResult();
     }
@@ -33,7 +32,7 @@ public class ${modelNameUpperCamel}Controller {
     }
 
     @PutMapping
-    public Result update(${modelNameUpperCamel} ${modelNameLowerCamel}) {
+    public Result update(@RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}) {
         ${modelNameLowerCamel}Service.update(${modelNameLowerCamel});
         return ResultGenerator.genSuccessResult();
     }
