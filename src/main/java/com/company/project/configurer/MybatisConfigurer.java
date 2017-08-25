@@ -9,10 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.util.ObjectUtils;
 import tk.mybatis.spring.mapper.MapperScannerConfigurer;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 
 import static com.company.project.core.ProjectConstant.*;
@@ -45,7 +49,11 @@ public class MybatisConfigurer {
 
         //添加XML目录
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        bean.setMapperLocations(resolver.getResources("classpath:mapper/*.xml"));
+        //如果没有此目录的话，后续初始化SqlSessionFactory会报错，这里参考MybatisProperties的代码
+        org.springframework.core.io.Resource[] resources = null;
+        if (!ObjectUtils.isEmpty(resources = resolveMapperLocations("classpath:mapper/**/*.xml"))) {
+            bean.setMapperLocations(resources);
+        }
         return bean.getObject();
     }
 
@@ -68,6 +76,27 @@ public class MybatisConfigurer {
             return mapperScannerConfigurer;
         }
 
+    }
+
+    public org.springframework.core.io.Resource[] resolveMapperLocations(String... mapperLocations) {
+
+        PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+        ArrayList resources = new ArrayList();
+        if(mapperLocations != null) {
+            int total = mapperLocations.length;
+
+            for(int i = 0; i < total; ++i) {
+                String mapperLocation = mapperLocations[i];
+                try {
+                    org.springframework.core.io.Resource[] mappers = resourceResolver.getResources(mapperLocation);
+                    resources.addAll(Arrays.asList(mappers));
+                } catch (IOException ex) {
+                    ;
+                }
+            }
+        }
+
+        return (org.springframework.core.io.Resource[])resources.toArray(new org.springframework.core.io.Resource[resources.size()]);
     }
 }
 
