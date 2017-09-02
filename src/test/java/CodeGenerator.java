@@ -38,7 +38,7 @@ public class CodeGenerator {
 
     public static void main(String[] args) {
         genCode("输入表名");
-        //genCode("输入表名","输入自定义Model名称");
+        //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
     /**
@@ -48,7 +48,7 @@ public class CodeGenerator {
      */
     public static void genCode(String... tableNames) {
         for (String tableName : tableNames) {
-            genCode(tableName, null);
+            genCodeByCustomModelName(tableName, null);
         }
     }
 
@@ -58,7 +58,7 @@ public class CodeGenerator {
      * @param tableName 数据表名称
      * @param modelName 自定义的 Model 名称
      */
-    public static void genCode(String tableName, String modelName) {
+    public static void genCodeByCustomModelName(String tableName, String modelName) {
         genModelAndMapper(tableName, modelName);
         genService(tableName, modelName);
         genController(tableName, modelName);
@@ -102,7 +102,7 @@ public class CodeGenerator {
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
-        tableConfiguration.setDomainObjectName(modelName);
+        if (StringUtils.isNotEmpty(modelName))tableConfiguration.setDomainObjectName(modelName);
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
         context.addTableConfiguration(tableConfiguration);
 
