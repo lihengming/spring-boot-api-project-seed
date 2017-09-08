@@ -1,4 +1,6 @@
+import com.google.common.base.CaseFormat;
 import freemarker.template.TemplateExceptionHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.DefaultShellCallback;
@@ -36,18 +38,34 @@ public class CodeGenerator {
 
     public static void main(String[] args) {
         genCode("输入表名");
+        //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
+    /**
+     * 通过数据表名称生成代码，Model 名称通过解析数据表名称获得，下划线转大驼峰的形式。
+     * 如输入表名称 "t_user_detail" 将生成 TUserDetail、TUserDetailMapper、TUserDetailService ...
+     * @param tableNames 数据表名称...
+     */
     public static void genCode(String... tableNames) {
         for (String tableName : tableNames) {
-            //根据需求生成，不需要的注掉，模板有问题的话可以自己修改。
-            genModelAndMapper(tableName);
-            genService(tableName);
-            genController(tableName);
+            genCodeByCustomModelName(tableName, null);
         }
     }
 
-    public static void genModelAndMapper(String tableName) {
+    /**
+     * 通过数据表名称，和自定义的 Model 名称生成代码
+     * 如输入表名称 "t_user_detail" 和自定义的 Model 名称 "User" 将生成 User、UserMapper、UserService ...
+     * @param tableName 数据表名称
+     * @param modelName 自定义的 Model 名称
+     */
+    public static void genCodeByCustomModelName(String tableName, String modelName) {
+        genModelAndMapper(tableName, modelName);
+        genService(tableName, modelName);
+        genController(tableName, modelName);
+    }
+
+
+    public static void genModelAndMapper(String tableName, String modelName) {
         Context context = new Context(ModelType.FLAT);
         context.setId("Potato");
         context.setTargetRuntime("MyBatis3Simple");
@@ -84,6 +102,7 @@ public class CodeGenerator {
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
+        if (StringUtils.isNotEmpty(modelName))tableConfiguration.setDomainObjectName(modelName);
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
         context.addTableConfiguration(tableConfiguration);
 
@@ -106,21 +125,20 @@ public class CodeGenerator {
         if (generator.getGeneratedJavaFiles().isEmpty() || generator.getGeneratedXmlFiles().isEmpty()) {
             throw new RuntimeException("生成Model和Mapper失败：" + warnings);
         }
-
-        String modelName = tableNameConvertUpperCamel(tableName);
+        if (StringUtils.isEmpty(modelName)) modelName = tableNameConvertUpperCamel(tableName);
         System.out.println(modelName + ".java 生成成功");
         System.out.println(modelName + "Mapper.java 生成成功");
         System.out.println(modelName + "Mapper.xml 生成成功");
     }
 
-    public static void genService(String tableName) {
+    public static void genService(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
 
             Map<String, Object> data = new HashMap<>();
             data.put("date", DATE);
             data.put("author", AUTHOR);
-            String modelNameUpperCamel = tableNameConvertUpperCamel(tableName);
+            String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName) : modelName;
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
             data.put("basePackage", BASE_PACKAGE);
@@ -145,17 +163,17 @@ public class CodeGenerator {
         }
     }
 
-    public static void genController(String tableName) {
+    public static void genController(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
 
             Map<String, Object> data = new HashMap<>();
             data.put("date", DATE);
             data.put("author", AUTHOR);
-            data.put("baseRequestMapping", tableNameConvertMappingPath(tableName));
-            String modelNameUpperCamel = tableNameConvertUpperCamel(tableName);
+            String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName) : modelName;
+            data.put("baseRequestMapping", modelNameConvertMappingPath(modelNameUpperCamel));
             data.put("modelNameUpperCamel", modelNameUpperCamel);
-            data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
+            data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));
             data.put("basePackage", BASE_PACKAGE);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_CONTROLLER + modelNameUpperCamel + "Controller.java");
@@ -181,30 +199,11 @@ public class CodeGenerator {
     }
 
     private static String tableNameConvertLowerCamel(String tableName) {
-        StringBuilder result = new StringBuilder();
-        if (tableName != null && tableName.length() > 0) {
-            tableName = tableName.toLowerCase();//兼容使用大写的表名
-            boolean flag = false;
-            for (int i = 0; i < tableName.length(); i++) {
-                char ch = tableName.charAt(i);
-                if ("_".charAt(0) == ch) {
-                    flag = true;
-                } else {
-                    if (flag) {
-                        result.append(Character.toUpperCase(ch));
-                        flag = false;
-                    } else {
-                        result.append(ch);
-                    }
-                }
-            }
-        }
-        return result.toString();
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, tableName.toLowerCase());
     }
 
     private static String tableNameConvertUpperCamel(String tableName) {
-        String camel = tableNameConvertLowerCamel(tableName);
-        return camel.substring(0, 1).toUpperCase() + camel.substring(1);
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, tableName.toLowerCase());
 
     }
 
@@ -213,7 +212,13 @@ public class CodeGenerator {
         return "/" + (tableName.contains("_") ? tableName.replaceAll("_", "/") : tableName);
     }
 
+    private static String modelNameConvertMappingPath(String modelName) {
+        String tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, modelName);
+        return tableNameConvertMappingPath(tableName);
+    }
+
     private static String packageConvertPath(String packageName) {
         return String.format("/%s/", packageName.contains(".") ? packageName.replaceAll("\\.", "/") : packageName);
     }
+
 }
