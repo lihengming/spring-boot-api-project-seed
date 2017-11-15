@@ -4,6 +4,7 @@ package com.company.project.configurer;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
@@ -46,7 +47,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     //使用阿里 FastJson 作为JSON MessageConverter
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        FastJsonHttpMessageConverter4 converter = new FastJsonHttpMessageConverter4();
+        FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
         FastJsonConfig config = new FastJsonConfig();
         config.setSerializerFeatures(SerializerFeature.WriteMapNullValue,//保留空的字段
                 SerializerFeature.WriteNullStringAsEmpty,//String null -> ""
@@ -95,14 +96,16 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     //解决跨域问题
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        //registry.addMapping("/**");
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "TRACE");
     }
 
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //接口签名认证拦截器，该签名认证比较简单，实际项目中可以使用Json Web Token或其他更好的方式替代。
-        if (!"dev".equals(env)) { //开发环境忽略签名认证
+        if ("dev".equals(env)) { //开发环境忽略签名认证
             registry.addInterceptor(new HandlerInterceptorAdapter() {
                 @Override
                 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
