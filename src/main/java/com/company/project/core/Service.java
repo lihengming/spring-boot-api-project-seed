@@ -7,12 +7,33 @@ import java.util.List;
 
 /**
  * Service 层 基础接口，其他Service 接口 请继承该接口
+ * @author nao
  */
 public interface Service<T> {
-    void save(T model);//持久化
-    void save(List<T> models);//批量持久化
-    void deleteById(Integer id);//通过主鍵刪除
-    void deleteByIds(String ids);//批量刪除 eg：ids -> “1,2,3,4”
+    /**
+     * 持久化
+     * @param model d
+     */
+    void save(T model);
+
+    /**
+     * 批量持久化
+     * @param models
+     */
+    void save(List<T> models);
+
+    /**
+     * 通过主鍵刪除
+     * @param id
+     */
+    void deleteById(Integer id);
+
+    /**
+     * 批量刪除 eg：ids -> “1,2,3,4”
+     * @param ids
+     */
+    void deleteByIds(String ids);
+
     void update(T model);//更新
     T findById(Integer id);//通过ID查找
     T findBy(String fieldName, Object value) throws TooManyResultsException; //通过Model中某个成员变量名称（非数据表中column的名称）查找,value需符合unique约束
