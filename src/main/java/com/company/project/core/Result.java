@@ -11,17 +11,12 @@ public class Result {
     private Object data;
 
     public Result setCode(ResultCode resultCode) {
-        this.code = resultCode.code;
+        this.code = resultCode.code();
         return this;
     }
 
     public int getCode() {
         return code;
-    }
-
-    public Result setCode(int code) {
-        this.code = code;
-        return this;
     }
 
     public String getMessage() {
