@@ -43,12 +43,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>24.0-jre</version>
         </dependency>
         <!--MySQL JDBC驱动-->
         <dependency>
@@ -70,7 +69,7 @@
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper</artifactId>
-            <version>3.4.2</version>
+            <version>3.5.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.pagehelper</groupId>
@@ -93,7 +92,6 @@
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.23</version>
             <scope>test</scope>
         </dependency>
         <dependency>
