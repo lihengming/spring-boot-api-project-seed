@@ -1,60 +1,118 @@
-import com.google.common.base.CaseFormat;
-import freemarker.template.TemplateExceptionHandler;
-import org.apache.commons.lang3.StringUtils;
-import org.mybatis.generator.api.MyBatisGenerator;
-import org.mybatis.generator.config.*;
-import org.mybatis.generator.internal.DefaultShellCallback;
+import static com.company.project.core.ProjectConstant.BASE_PACKAGE;
+import static com.company.project.core.ProjectConstant.CONTROLLER_PACKAGE;
+import static com.company.project.core.ProjectConstant.MAPPER_INTERFACE_REFERENCE;
+import static com.company.project.core.ProjectConstant.MAPPER_PACKAGE;
+import static com.company.project.core.ProjectConstant.MODEL_PACKAGE;
+import static com.company.project.core.ProjectConstant.SERVICE_IMPL_PACKAGE;
+import static com.company.project.core.ProjectConstant.SERVICE_PACKAGE;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
-import static com.company.project.core.ProjectConstant.*;
+import org.apache.commons.lang3.StringUtils;
+import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.config.Configuration;
+import org.mybatis.generator.config.Context;
+import org.mybatis.generator.config.GeneratedKey;
+import org.mybatis.generator.config.JDBCConnectionConfiguration;
+import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
+import org.mybatis.generator.config.JavaModelGeneratorConfiguration;
+import org.mybatis.generator.config.ModelType;
+import org.mybatis.generator.config.PluginConfiguration;
+import org.mybatis.generator.config.PropertyRegistry;
+import org.mybatis.generator.config.SqlMapGeneratorConfiguration;
+import org.mybatis.generator.config.TableConfiguration;
+import org.mybatis.generator.internal.DefaultShellCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.CaseFormat;
+
+import freemarker.template.TemplateExceptionHandler;
 
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  */
 public class CodeGenerator {
-    //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
-    private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "123456";
-    private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
-    private static final String PROJECT_PATH = System.getProperty("user.dir");//项目在硬盘上的基础路径
-    private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";//模板位置
+    static final String DB_URL = "spring.datasource.url";
+    static final String DB_USER = "spring.datasource.username";
+    static final String DB_PASS = "spring.datasource.password";
+    static final String DB_DRIVER = "spring.datasource.driver-class-name";
 
-    private static final String JAVA_PATH = "/src/main/java"; //java文件路径
-    private static final String RESOURCES_PATH = "/src/main/resources";//资源文件路径
+    private static final Logger logger = LoggerFactory.getLogger(CodeGenerator.class);
+    // JDBC配置，请修改为你项目的实际配置
 
-    private static final String PACKAGE_PATH_SERVICE = packageConvertPath(SERVICE_PACKAGE);//生成的Service存放路径
-    private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);//生成的Service实现存放路径
-    private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
+    private static String JDBC_URL;
+    private static String JDBC_USERNAME;
+    private static String JDBC_PASSWORD;
+    private static String JDBC_DIVER_CLASS_NAME;
 
-    private static final String AUTHOR = "CodeGenerator";//@author
-    private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
+    private static final String PROJECT_PATH = System.getProperty("user.dir");// 项目在硬盘上的基础路径
+    private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";// 模板位置
+
+    private static final String JAVA_PATH = "/src/main/java"; // java文件路径
+    private static final String RESOURCES_PATH = "/src/main/resources";// 资源文件路径
+
+    private static final String PACKAGE_PATH_SERVICE = packageConvertPath(SERVICE_PACKAGE);// 生成的Service存放路径
+    private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);// 生成的Service实现存放路径
+    private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);// 生成的Controller存放路径
+
+    private static final String AUTHOR = "CodeGenerator";// @author
+    private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());// @date
 
     public static void main(String[] args) {
-        genCode("输入表名");
-        //genCodeByCustomModelName("输入表名","输入自定义Model名称");
+        genCode("dev", "blog", "user");
+        // genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
     /**
      * 通过数据表名称生成代码，Model 名称通过解析数据表名称获得，下划线转大驼峰的形式。
      * 如输入表名称 "t_user_detail" 将生成 TUserDetail、TUserDetailMapper、TUserDetailService ...
+     *
      * @param tableNames 数据表名称...
      */
-    public static void genCode(String... tableNames) {
+    public static void genCode(String env, String... tableNames) {
+        loadProperties(env);
+
         for (String tableName : tableNames) {
             genCodeByCustomModelName(tableName, null);
         }
     }
 
     /**
+     * 根据配置文件是加载数据库信息
+     *
+     * @param env
+     */
+    private static void loadProperties(String env) {
+        ClassLoader classLoader = CodeGenerator.class.getClassLoader();
+        Properties prop = new Properties();
+        try {
+            prop.load(classLoader.getResourceAsStream("application-" + env + ".properties"));
+            JDBC_URL = prop.getProperty(DB_URL);
+            JDBC_USERNAME = prop.getProperty(DB_USER);
+            JDBC_PASSWORD = prop.getProperty(DB_PASS);
+            JDBC_DIVER_CLASS_NAME = prop.getProperty(DB_DRIVER);
+        }
+        catch (IOException e) {
+            logger.error("load properties fail", e);
+        }
+
+    }
+
+    /**
      * 通过数据表名称，和自定义的 Model 名称生成代码
      * 如输入表名称 "t_user_detail" 和自定义的 Model 名称 "User" 将生成 User、UserMapper、UserService ...
+     *
      * @param tableName 数据表名称
      * @param modelName 自定义的 Model 名称
      */
@@ -63,7 +121,6 @@ public class CodeGenerator {
         genService(tableName, modelName);
         genController(tableName, modelName);
     }
-
 
     public static void genModelAndMapper(String tableName, String modelName) {
         Context context = new Context(ModelType.FLAT);
@@ -102,7 +159,8 @@ public class CodeGenerator {
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
-        if (StringUtils.isNotEmpty(modelName))tableConfiguration.setDomainObjectName(modelName);
+        if (StringUtils.isNotEmpty(modelName))
+            tableConfiguration.setDomainObjectName(modelName);
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
         context.addTableConfiguration(tableConfiguration);
 
@@ -115,17 +173,19 @@ public class CodeGenerator {
 
             boolean overwrite = true;
             DefaultShellCallback callback = new DefaultShellCallback(overwrite);
-            warnings = new ArrayList<String>();
+            warnings = new ArrayList<>();
             generator = new MyBatisGenerator(config, callback, warnings);
             generator.generate(null);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("生成Model和Mapper失败", e);
         }
 
         if (generator.getGeneratedJavaFiles().isEmpty() || generator.getGeneratedXmlFiles().isEmpty()) {
             throw new RuntimeException("生成Model和Mapper失败：" + warnings);
         }
-        if (StringUtils.isEmpty(modelName)) modelName = tableNameConvertUpperCamel(tableName);
+        if (StringUtils.isEmpty(modelName))
+            modelName = tableNameConvertUpperCamel(tableName);
         System.out.println(modelName + ".java 生成成功");
         System.out.println(modelName + "Mapper.java 生成成功");
         System.out.println(modelName + "Mapper.xml 生成成功");
@@ -147,18 +207,17 @@ public class CodeGenerator {
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
-            cfg.getTemplate("service.ftl").process(data,
-                    new FileWriter(file));
+            cfg.getTemplate("service.ftl").process(data, new FileWriter(file));
             System.out.println(modelNameUpperCamel + "Service.java 生成成功");
 
             File file1 = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_SERVICE_IMPL + modelNameUpperCamel + "ServiceImpl.java");
             if (!file1.getParentFile().exists()) {
                 file1.getParentFile().mkdirs();
             }
-            cfg.getTemplate("service-impl.ftl").process(data,
-                    new FileWriter(file1));
+            cfg.getTemplate("service-impl.ftl").process(data, new FileWriter(file1));
             System.out.println(modelNameUpperCamel + "ServiceImpl.java 生成成功");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("生成Service失败", e);
         }
     }
@@ -180,11 +239,12 @@ public class CodeGenerator {
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
-            //cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
+            // cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
             cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
 
             System.out.println(modelNameUpperCamel + "Controller.java 生成成功");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new RuntimeException("生成Controller失败", e);
         }
 
@@ -208,7 +268,7 @@ public class CodeGenerator {
     }
 
     private static String tableNameConvertMappingPath(String tableName) {
-        tableName = tableName.toLowerCase();//兼容使用大写的表名
+        tableName = tableName.toLowerCase();// 兼容使用大写的表名
         return "/" + (tableName.contains("_") ? tableName.replaceAll("_", "/") : tableName);
     }
 
