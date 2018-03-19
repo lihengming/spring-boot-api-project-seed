@@ -1,0 +1,11 @@
+DROP TABLE test.blog;
+CREATE TABLE test.blog (id int NOT NULL AUTO_INCREMENT, title varchar(100) NOT NULL, content varchar(255), user_id int NOT NULL, pub_date date NOT NULL, PRIMARY KEY (id), INDEX user_id_idx (user_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_general_ci;
+INSERT INTO test.blog (id, title, content, user_id, pub_date) VALUES (1, 'SpringMVC教程', '这是SpringMVC的简单教程。TEST TEST TEST', 2, '2015-03-18');
+DROP TABLE test.user;
+CREATE TABLE test.user (id int NOT NULL AUTO_INCREMENT, nickname varchar(45) NOT NULL, password varchar(45) NOT NULL, first_name varchar(45), last_name varchar(45), PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_general_ci;
+INSERT INTO test.user (id, nickname, password, first_name, last_name) VALUES (1, 'Steve', 'gaussic2', 'Steve', 'NoJob');
+INSERT INTO test.user (id, nickname, password, first_name, last_name) VALUES (2, 'Bill', '111111', 'Bill', 'Gates');
+INSERT INTO test.user (id, nickname, password, first_name, last_name) VALUES (3, 'Mark', '22222', 'Mark', 'Zuckerberg');
+INSERT INTO test.user (id, nickname, password, first_name, last_name) VALUES (4, 'gauss', '11111111', 'Gaussic', 'D');
+ALTER TABLE test.blog ADD CONSTRAINT FKpxk2jtysqn41oop7lvxcp6dqq FOREIGN KEY (user_id) REFERENCES test.user (id) ;
+ALTER TABLE test.blog ADD CONSTRAINT user_id FOREIGN KEY (user_id) REFERENCES test.user (id) ON DELETE NO ACTION ON UPDATE NO ACTION;

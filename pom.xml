@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.9.RELEASE</version>
+        <version>2.0.0.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -43,12 +43,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>24.0-jre</version>
         </dependency>
         <!--MySQL JDBC驱动-->
         <dependency>
@@ -65,12 +64,12 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.4.5</version>
+            <version>3.4.6</version>
         </dependency>
         <dependency>
             <groupId>tk.mybatis</groupId>
             <artifactId>mapper</artifactId>
-            <version>3.4.2</version>
+            <version>3.5.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.pagehelper</groupId>
@@ -81,19 +80,18 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.44</version>
+            <version>1.2.46</version>
         </dependency>
         <!--阿里 Druid Spring Boot Starter依赖-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.1.6</version>
+            <version>1.1.9</version>
         </dependency>
         <!--代码生成器依赖-->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-            <version>2.3.23</version>
             <scope>test</scope>
         </dependency>
         <dependency>
