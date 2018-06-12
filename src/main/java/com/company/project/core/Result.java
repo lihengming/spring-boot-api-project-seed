@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 
 /**
  * 统一API响应结果封装
+ * @author lerry
  */
 public class Result<T> {
     private int code;
@@ -32,7 +33,7 @@ public class Result<T> {
         return data;
     }
 
-    public Result setData(T data) {
+    Result setData(T data) {
         this.data = data;
         return this;
     }

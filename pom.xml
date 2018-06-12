@@ -102,6 +102,12 @@
             <version>1.3.5</version>
             <scope>test</scope>
         </dependency>
+        <!-- lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.0</version>
+        </dependency>
     </dependencies>
 
     <build>
