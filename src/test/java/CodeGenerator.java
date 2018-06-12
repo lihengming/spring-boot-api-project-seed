@@ -36,8 +36,13 @@ public class CodeGenerator {
     private static final String AUTHOR = "CodeGenerator";//@author
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
+    /**
+     * 默认生成的Model名称,需要去掉的表名前缀,不区分大小写
+     */
+    private static final String REDUCE_TABLE_PREFIX = "T_";
+
     public static void main(String[] args) {
-        genCode("输入表名");
+        genCode("t_user");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
@@ -46,7 +51,7 @@ public class CodeGenerator {
      * 如输入表名称 "t_user_detail" 将生成 TUserDetail、TUserDetailMapper、TUserDetailService ...
      * @param tableNames 数据表名称...
      */
-    public static void genCode(String... tableNames) {
+    private static void genCode(String... tableNames) {
         for (String tableName : tableNames) {
             genCodeByCustomModelName(tableName, null);
         }
@@ -58,14 +63,18 @@ public class CodeGenerator {
      * @param tableName 数据表名称
      * @param modelName 自定义的 Model 名称
      */
-    public static void genCodeByCustomModelName(String tableName, String modelName) {
+    private static void genCodeByCustomModelName(String tableName, String modelName) {
+        //如果自定义的model名称为空，且需要去除表名的前缀，则去前缀后的驼峰命名为自定义的model名称
+        if(StringUtils.isEmpty(modelName) && StringUtils.isNotEmpty(REDUCE_TABLE_PREFIX)){
+            modelName = getUpperCamel(tableName.replaceAll(String.format("^((?i)%s)", REDUCE_TABLE_PREFIX), ""));
+        }
         genModelAndMapper(tableName, modelName);
         genService(tableName, modelName);
         genController(tableName, modelName);
     }
 
 
-    public static void genModelAndMapper(String tableName, String modelName) {
+    private static void genModelAndMapper(String tableName, String modelName) {
         Context context = new Context(ModelType.FLAT);
         context.setId("Potato");
         context.setTargetRuntime("MyBatis3Simple");
@@ -102,7 +111,9 @@ public class CodeGenerator {
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
-        if (StringUtils.isNotEmpty(modelName))tableConfiguration.setDomainObjectName(modelName);
+        if (StringUtils.isNotEmpty(modelName)){
+            tableConfiguration.setDomainObjectName(modelName);
+        }
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
         context.addTableConfiguration(tableConfiguration);
 
@@ -115,7 +126,7 @@ public class CodeGenerator {
 
             boolean overwrite = true;
             DefaultShellCallback callback = new DefaultShellCallback(overwrite);
-            warnings = new ArrayList<String>();
+            warnings = new ArrayList<>();
             generator = new MyBatisGenerator(config, callback, warnings);
             generator.generate(null);
         } catch (Exception e) {
@@ -125,13 +136,15 @@ public class CodeGenerator {
         if (generator.getGeneratedJavaFiles().isEmpty() || generator.getGeneratedXmlFiles().isEmpty()) {
             throw new RuntimeException("生成Model和Mapper失败：" + warnings);
         }
-        if (StringUtils.isEmpty(modelName)) modelName = tableNameConvertUpperCamel(tableName);
+        if (StringUtils.isEmpty(modelName)){
+            modelName = tableNameConvertUpperCamel(tableName);
+        }
         System.out.println(modelName + ".java 生成成功");
         System.out.println(modelName + "Mapper.java 生成成功");
         System.out.println(modelName + "Mapper.xml 生成成功");
     }
 
-    public static void genService(String tableName, String modelName) {
+    private static void genService(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
 
@@ -163,7 +176,7 @@ public class CodeGenerator {
         }
     }
 
-    public static void genController(String tableName, String modelName) {
+    private static void genController(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
 
@@ -180,7 +193,6 @@ public class CodeGenerator {
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
-            //cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
             cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
 
             System.out.println(modelNameUpperCamel + "Controller.java 生成成功");
@@ -219,6 +231,20 @@ public class CodeGenerator {
 
     private static String packageConvertPath(String packageName) {
         return String.format("/%s/", packageName.contains(".") ? packageName.replaceAll("\\.", "/") : packageName);
+    }
+
+    /**
+     * 获取字符串的大骆驼峰形式
+     */
+    private static String getUpperCamel(String str) {
+        //如果全大写，且包含下划线
+        if (str.replaceAll("[A-Z]+", "").equals(str) && str.contains("_"))
+            return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, str);
+        //如果不包含下划线
+        if (!str.contains("_") && str.length() > 2)
+            return str.toUpperCase().charAt(0) + str.substring(1);
+        //如果不全为大写，且包含下划线
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, str.toLowerCase());
     }
 
 }
