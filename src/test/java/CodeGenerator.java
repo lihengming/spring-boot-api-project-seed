@@ -8,6 +8,7 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,8 +34,15 @@ public class CodeGenerator {
     private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);//生成的Service实现存放路径
     private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
 
-    private static final String AUTHOR = "CodeGenerator";//@author
-    private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
+    private static final String CREATE_BY = "CodeGenerator";//@createBy
+    private static final String AUTHOR = "LErry.li";//@author
+    private static final String DATE = DateFormat.getDateInstance().format(new Date());//@date
+    private static final String TIME = DateFormat.getTimeInstance().format(new Date());//@time
+
+    /**
+     * 是否启用MVC代码生成
+     */
+    private static final boolean ENABLE_MVC_CODE_GENERATOR = true;
 
     /**
      * 默认生成的Model名称,需要去掉的表名前缀,不区分大小写
@@ -69,11 +77,18 @@ public class CodeGenerator {
             modelName = getUpperCamel(tableName.replaceAll(String.format("^((?i)%s)", REDUCE_TABLE_PREFIX), ""));
         }
         genModelAndMapper(tableName, modelName);
-        genService(tableName, modelName);
-        genController(tableName, modelName);
+        if(ENABLE_MVC_CODE_GENERATOR){
+            genService(tableName, modelName);
+            genController(tableName, modelName);
+        }
     }
 
 
+    /**
+     * 生成实体类和Mapper
+     * @param tableName
+     * @param modelName
+     */
     private static void genModelAndMapper(String tableName, String modelName) {
         Context context = new Context(ModelType.FLAT);
         context.setId("Potato");
@@ -124,8 +139,7 @@ public class CodeGenerator {
             config.addContext(context);
             config.validate();
 
-            boolean overwrite = true;
-            DefaultShellCallback callback = new DefaultShellCallback(overwrite);
+            DefaultShellCallback callback = new DefaultShellCallback(true);
             warnings = new ArrayList<>();
             generator = new MyBatisGenerator(config, callback, warnings);
             generator.generate(null);
@@ -144,13 +158,17 @@ public class CodeGenerator {
         System.out.println(modelName + "Mapper.xml 生成成功");
     }
 
+    /**
+     * 生成service 代码
+     * @param tableName
+     * @param modelName
+     */
     private static void genService(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
 
             Map<String, Object> data = new HashMap<>();
-            data.put("date", DATE);
-            data.put("author", AUTHOR);
+            setFileHeader(data);
             String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName) : modelName;
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
@@ -176,13 +194,17 @@ public class CodeGenerator {
         }
     }
 
+    /**
+     * 生成Controller代码
+     * @param tableName
+     * @param modelName
+     */
     private static void genController(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
 
             Map<String, Object> data = new HashMap<>();
-            data.put("date", DATE);
-            data.put("author", AUTHOR);
+            setFileHeader(data);
             String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName) : modelName;
             data.put("baseRequestMapping", modelNameConvertMappingPath(modelNameUpperCamel));
             data.put("modelNameUpperCamel", modelNameUpperCamel);
@@ -200,6 +222,17 @@ public class CodeGenerator {
             throw new RuntimeException("生成Controller失败", e);
         }
 
+    }
+
+    /**
+     * 设置自动生成代码的文件头
+     * @param data
+     */
+    private static void setFileHeader(Map<String, Object> data){
+        data.put("date", DATE);
+        data.put("author", AUTHOR);
+        data.put("time", TIME);
+        data.put("createBy", CREATE_BY);
     }
 
     private static freemarker.template.Configuration getConfiguration() throws IOException {
