@@ -43,6 +43,10 @@ public class CodeGenerator {
      * 是否启用MVC代码生成
      */
     private static final boolean ENABLE_MVC_CODE_GENERATOR = true;
+    /**
+     * 是否继承Serializable接口
+     */
+    private static final boolean IMPLEMENTS_SERIALIZABLE = true;
 
     /**
      * 默认生成的Model名称,需要去掉的表名前缀,不区分大小写
@@ -103,10 +107,8 @@ public class CodeGenerator {
         jdbcConnectionConfiguration.setDriverClass(JDBC_DIVER_CLASS_NAME);
         context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
 
-        PluginConfiguration pluginConfiguration = new PluginConfiguration();
-        pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
-        pluginConfiguration.addProperty("mappers", MAPPER_INTERFACE_REFERENCE);
-        context.addPluginConfiguration(pluginConfiguration);
+        //添加各种插件
+        addPlugin(context);
 
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
         javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
@@ -278,6 +280,24 @@ public class CodeGenerator {
             return str.toUpperCase().charAt(0) + str.substring(1);
         //如果不全为大写，且包含下划线
         return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, str.toLowerCase());
+    }
+
+    /**
+     * 添加各种插件
+     * @param context
+     */
+    private static void addPlugin(Context context){
+        PluginConfiguration pluginConfiguration = new PluginConfiguration();
+        //通用Mapper插件
+        pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
+        pluginConfiguration.addProperty("mappers", MAPPER_INTERFACE_REFERENCE);
+        context.addPluginConfiguration(pluginConfiguration);
+        //实现序列化接口插件
+        if(IMPLEMENTS_SERIALIZABLE){
+            pluginConfiguration = new PluginConfiguration();
+            pluginConfiguration.setConfigurationType("org.mybatis.generator.plugins.SerializablePlugin");
+            context.addPluginConfiguration(pluginConfiguration);
+        }
     }
 
 }
