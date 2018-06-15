@@ -24,24 +24,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.validation.MessageCodesResolver;
+import org.springframework.validation.Validator;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * Spring MVC 配置
+ * 全局定制化Spring Boot的MVC特性
+ *
  * @author lerry
  */
 @Configuration
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
+
     /**
      * 当前激活的配置文件
      */
@@ -64,11 +69,12 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
     /**
      * 统一异常处理
+     *
      * @param exceptionResolvers
      */
     @Override
     public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
-        exceptionResolvers.add((request, response, handler, e) ->{
+        exceptionResolvers.add((request, response, handler, e) -> {
             Result result = new Result();
             //业务失败的异常，如“账号或密码错误”
             if (e instanceof ServiceException) {
@@ -100,15 +106,17 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
     /**
      * 解决跨域问题
+     *
      * @param registry
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        //registry.addMapping("/**");
+        //registry.addMapping("/**").allowedOrigins("http://dev.com:8088");
     }
 
     /**
      * 添加拦截器
+     *
      * @param registry
      */
     @Override
@@ -135,6 +143,69 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 }
             });
         }
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer pathMatchConfigurer) {
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer contentNegotiationConfigurer) {
+    }
+
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer asyncSupportConfigurer) {
+    }
+
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer defaultServletHandlerConfigurer) {
+    }
+
+    /**
+     * 格式化
+     *
+     * @param formatterRegistry
+     */
+    @Override
+    public void addFormatters(FormatterRegistry formatterRegistry) {
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry resourceHandlerRegistry) {
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry viewControllerRegistry) {
+    }
+
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry viewResolverRegistry) {
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> list) {
+    }
+
+    @Override
+    public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> list) {
+    }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> list) {
+    }
+
+    @Override
+    public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> list) {
+    }
+
+    @Override
+    public Validator getValidator() {
+        return null;
+    }
+
+    @Override
+    public MessageCodesResolver getMessageCodesResolver() {
+        return null;
     }
 
     private void responseResult(HttpServletResponse response, Result result) {
