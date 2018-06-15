@@ -1,7 +1,7 @@
 package com.company.project.core;
 
 
-import org.apache.ibatis.exceptions.TooManyResultsException;
+import com.company.project.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -74,7 +74,7 @@ public abstract class AbstractService<T> implements Service<T> {
     }
 
     @Override
-    public T findBy(String fieldName, Object value) throws TooManyResultsException {
+    public T findBy(String fieldName, Object value) throws BusinessException {
         try {
             T model = modelClass.newInstance();
             Field field = modelClass.getDeclaredField(fieldName);
@@ -82,7 +82,7 @@ public abstract class AbstractService<T> implements Service<T> {
             field.set(model, value);
             return mapper.selectOne(model);
         } catch (ReflectiveOperationException e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new BusinessException(e.getMessage(), e);
         }
     }
 
