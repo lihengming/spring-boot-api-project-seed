@@ -5,8 +5,9 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.company.project.common.interceptor.AllowCrossDomainInterceptor;
-import com.company.project.common.result.PlatformResult;
 import com.company.project.common.interceptor.ResponseResultInterceptor;
+import com.company.project.common.result.PlatformResult;
+import com.company.project.common.util.IpUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,13 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.validation.MessageCodesResolver;
-import org.springframework.validation.Validator;
-import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -99,7 +95,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                         return true;
                     } else {
                         logger.warn("签名认证失败，请求接口：{}，请求IP：{}，请求参数：{}",
-                                request.getRequestURI(), getIpAddress(request), JSON.toJSONString(request.getParameterMap()));
+                                request.getRequestURI(), IpUtil.getRealIp(request), JSON.toJSONString(request.getParameterMap()));
                         PlatformResult result = new PlatformResult();
                         result.setCode(HttpStatus.UNAUTHORIZED.value()).setMessage("签名认证失败");
                         responseResult(response, result);
@@ -155,30 +151,4 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
         return StringUtils.equals(sign, requestSign);
     }
 
-    private String getIpAddress(HttpServletRequest request) {
-        String unknown = "unknown";
-        String ip = request.getHeader("x-forwarded-for");
-        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-        }
-        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-        }
-        if (ip == null || ip.length() == 0 || unknown.equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        // 如果是多级代理，那么取第一个ip为客户端ip
-        String str = ",";
-        if (ip != null && ip.contains(str)) {
-            ip = ip.substring(0, ip.indexOf(str)).trim();
-        }
-
-        return ip;
-    }
 }
