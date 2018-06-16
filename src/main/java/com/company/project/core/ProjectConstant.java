@@ -43,5 +43,5 @@ public final class ProjectConstant {
     /**
      * Mapper插件基础接口的完全限定名
      */
-    public static final String MAPPER_INTERFACE_REFERENCE = BASE_PACKAGE + ".core.Mapper";
+    public static final String MAPPER_INTERFACE_REFERENCE = BASE_PACKAGE + ".common.mapper.CrudMapper";
 }

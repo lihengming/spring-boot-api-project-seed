@@ -2,6 +2,7 @@ package com.company.project.core;
 
 
 import com.company.project.common.exception.BusinessException;
+import com.company.project.common.mapper.CrudMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public abstract class AbstractService<T> implements Service<T> {
 
     @Autowired
-    protected Mapper<T> mapper;
+    protected CrudMapper<T> mapper;
 
     /**
      *  当前泛型真实类型的Class
