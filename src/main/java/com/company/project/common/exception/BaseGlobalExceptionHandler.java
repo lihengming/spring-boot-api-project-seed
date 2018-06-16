@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Created with IntelliJ IDEA.
  * Description:
- *
+ *  聚合层全局异常处理类
  * @author LErry.li
  * Date: 2018-06-15
  * Time: 14:40

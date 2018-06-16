@@ -1,5 +1,6 @@
-package com.company.project.common.result;
+package com.company.project.common.interceptor;
 
+import com.company.project.common.result.ResponseResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;

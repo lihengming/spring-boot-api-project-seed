@@ -4,8 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.company.project.common.interceptor.AllowCrossDomainInterceptor;
 import com.company.project.common.result.PlatformResult;
-import com.company.project.common.result.ResponseResultInterceptor;
+import com.company.project.common.interceptor.ResponseResultInterceptor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -48,8 +49,19 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Value("${spring.profiles.active}")
     private String env;
 
+    private String apiUri = "/**";
+
+    /**
+     * 响应结果控制拦截
+     */
     @Autowired
     private ResponseResultInterceptor responseResultInterceptor;
+
+    /**
+     * 跨域配置拦截器
+     */
+    @Autowired
+    private AllowCrossDomainInterceptor allowCrossDomainInterceptor;
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -65,33 +77,14 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     }
 
     /**
-     * 统一异常处理
-     *
-     * @param exceptionResolvers
-     */
-    @Override
-    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
-        //统一异常处理
-    }
-
-    /**
-     * 解决跨域问题
-     *
-     * @param registry
-     */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://dev.com:8088");
-    }
-
-    /**
      * 添加拦截器
      *
      * @param interceptorRegistry
      */
     @Override
     public void addInterceptors(InterceptorRegistry interceptorRegistry) {
-        String apiUri = "/**";
+        //跨域拦截
+        interceptorRegistry.addInterceptor(allowCrossDomainInterceptor).addPathPatterns(apiUri);
         //响应结果控制拦截
         interceptorRegistry.addInterceptor(responseResultInterceptor).addPathPatterns(apiUri);
         //接口签名认证拦截器，该签名认证比较简单，实际项目中可以使用Json Web Token或其他更好的方式替代。
@@ -115,27 +108,6 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 }
             });
         }
-    }
-
-    /**
-     * 格式化
-     *
-     * @param formatterRegistry
-     */
-    @Override
-    public void addFormatters(FormatterRegistry formatterRegistry) {
-        //格式化
-    }
-
-
-    @Override
-    public Validator getValidator() {
-        return null;
-    }
-
-    @Override
-    public MessageCodesResolver getMessageCodesResolver() {
-        return null;
     }
 
     private void responseResult(HttpServletResponse response, PlatformResult result) {
