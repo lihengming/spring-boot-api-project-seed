@@ -1,10 +1,8 @@
 package com.company.project.common.aspect;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.company.project.common.exception.GlobalExceptionHandler;
 import com.company.project.common.util.IpUtil;
-import com.google.common.collect.Lists;
+import com.company.project.common.util.LogAspectUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,12 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,21 +46,20 @@ public class RestControllerAspect {
         if (!logFlag) {
             return joinPoint.proceed();
         }
-
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
+        String userAgent = request.getHeader("user-agent");
         String ip = IpUtil.getRealIp(request);
         String methodName = this.getMethodName(joinPoint);
-        String params = this.getParamsJson(joinPoint);
+        String params = LogAspectUtil.getMethodParams(joinPoint);
 
-        String userAgent = request.getHeader("user-agent");
-
-        logger.info("Started request method [{}] params [{}] IP [{}] userAgent [{}]", methodName, params, ip, userAgent);
+        logger.info("开始请求方法:[{}] 参数:[{}] IP:[{}] userAgent [{}]", methodName, params, ip, userAgent);
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
-        String deleteSensitiveContent =  this.deleteSensitiveContent(result);
-        logger.info("Ended request method [{}] params[{}] response is [{}] cost [{}] millis ",
-                 methodName, params, deleteSensitiveContent, System.currentTimeMillis() - start);
+        long end = System.currentTimeMillis();
+        String deleteSensitiveContent =  LogAspectUtil.deleteSensitiveContent(result);
+        logger.info("结束请求方法:[{}] 参数:[{}] 返回结果[{}] 耗时:[{}]毫秒 ",
+                 methodName, params, deleteSensitiveContent, end - start);
         return result;
     }
 
@@ -78,26 +72,6 @@ public class RestControllerAspect {
         return methodName;
     }
 
-    private String getParamsJson(ProceedingJoinPoint joinPoint) {
-        Object[] args = joinPoint.getArgs();
-        StringBuilder sb = new StringBuilder();
-        for (Object arg : args) {
-            //移除敏感内容
-            String paramStr;
-            if (arg instanceof HttpServletResponse) {
-                paramStr = HttpServletResponse.class.getSimpleName();
-            } else if (arg instanceof HttpServletRequest) {
-                paramStr = HttpServletRequest.class.getSimpleName();
-            } else if (arg instanceof MultipartFile) {
-                long size = ((MultipartFile) arg).getSize();
-                paramStr = MultipartFile.class.getSimpleName() + " size:" + size;
-            } else {
-                paramStr = this.deleteSensitiveContent(arg);
-            }
-            sb.append(paramStr).append(",");
-        }
-        return sb.deleteCharAt(sb.length() - 1).toString();
-    }
 
     /**
      * 判断是否需要记录日志
@@ -105,42 +79,6 @@ public class RestControllerAspect {
     private boolean needToLog(Method method) {
         return method.getAnnotation(GetMapping.class) == null
                 && !method.getDeclaringClass().equals(GlobalExceptionHandler.class);
-    }
-
-    /**
-     * 删除参数中的敏感内容
-     * @param obj 参数对象
-     * @return 去除敏感内容后的参数对象
-     */
-    private String deleteSensitiveContent(Object obj) {
-        JSONObject jsonObject = new JSONObject();
-        if (obj == null || obj instanceof Exception) {
-            return jsonObject.toJSONString();
-        }
-
-            String param = JSON.toJSONString(obj);
-            try {
-                jsonObject = JSONObject.parseObject(param);
-            }catch (ClassCastException e) {
-                return String.valueOf(obj);
-            }
-            List<String> sensitiveFieldList = this.getSensitiveFieldList();
-            for (String sensitiveField : sensitiveFieldList) {
-                if (jsonObject.containsKey(sensitiveField)) {
-                    jsonObject.put(sensitiveField, "******");
-                }
-            }
-        return jsonObject.toJSONString();
-    }
-
-    /**
-     * 敏感字段列表（当然这里你可以更改为可配置的）
-     */
-    private List<String> getSensitiveFieldList() {
-        List<String> sensitiveFieldList = Lists.newArrayList();
-        sensitiveFieldList.add("pwd");
-        sensitiveFieldList.add("password");
-        return sensitiveFieldList;
     }
 
 }
