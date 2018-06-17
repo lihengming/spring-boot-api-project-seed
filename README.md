@@ -34,7 +34,7 @@ Spring Boot API Project Seed 是一个基于Spring Boot & MyBatis的种子项目
 - 建议在公司内部使用[ShowDoc](https://github.com/star7th/showdoc)、[SpringFox-Swagger2](https://github.com/springfox/springfox) 、[RAP](https://github.com/thx/RAP)等开源项目来编写、管理API文档
  
 ## 技术选型&文档
-- Spring Boot（[查看Spring Boot学习&使用指南](https://blog.csdn.net/lsy0903/article/details/52910573)）
+- Spring Boot（[查看Spring Boot学习&使用指南](https://blog.csdn.net/lsy0903/article/category/6413992)）
 - MyBatis（[查看官方中文文档](http://www.mybatis.org/mybatis-3/zh/index.html)）
 - MyBatisb通用Mapper插件（[查看官方中文文档](https://mapperhelper.github.io/docs/)）
 - MyBatis PageHelper分页插件（[查看官方中文文档](https://pagehelper.github.io/)）
