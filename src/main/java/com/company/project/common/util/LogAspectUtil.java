@@ -32,6 +32,9 @@ public class LogAspectUtil {
     public static String getMethodParams(ProceedingJoinPoint joinPoint){
         Object[] arguments = joinPoint.getArgs();
         StringBuilder sb = new StringBuilder();
+        if(arguments ==null || arguments.length <= 0){
+            return sb.toString();
+        }
         for (Object arg : arguments) {
             //移除敏感内容
             String paramStr;
