@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--
+        SpringBoot下，默认会加载logback-spring.xml，其他项目建议文件名改为logback.xml
+        目录 org/springframework/boot/logging/logback/*.xml下有一些log的基础配置
+        不是所有的项目都是Springboot，这里为了做成通用的logback.xml文件，对这里进行修改
+    -->
+    <!--<include resource="org/springframework/boot/logging/logback/defaults.xml" />-->
+
+    <!--日志文件存储的基础路径-->
+    <property name="LOG_PATH" value="${user.home}/logs"/>
+    <!--日志文件基础名称-->
+    <property name="BASE_FILE_NAME" value="seed-test"/>
+    <property name="LOG_FILE_MAX_SIZE" value="10KB"/>
+    <property name="LOG_FILE_MAX_HISTORY" value="100"/>
+
+    <!--控制台的输出-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} \(L%line\) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--文件输出-->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} \(L%line\) - %msg%n</pattern>
+        </encoder>
+        <file>${LOG_PATH}/${BASE_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--历史文件存放格式和路径-->
+            <fileNamePattern>${LOG_PATH}/history/${BASE_FILE_NAME}.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>${LOG_FILE_MAX_SIZE}</maxFileSize>
+            <maxHistory>${LOG_FILE_MAX_HISTORY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.apache.ibatis" level="DEBUG"/>
+    <logger name="com.github.pagehelper" level="DEBUG"/>
+    <logger name="java.sql.Connection" level="DEBUG"/>
+    <logger name="java.sql.Statement" level="DEBUG"/>
+    <logger name="java.sql.PreparedStatement" level="DEBUG"/>
+    <!--Mybatis的Mapper所在包，打印SQL日志-->
+    <logger name="com.company.project.dao" level="DEBUG"/>
+
+    <!--测试环境和开发环境打印控制台输出-->
+    <springProfile name="test,dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+    <!--生产环境不打印控制台输出-->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+</configuration>
