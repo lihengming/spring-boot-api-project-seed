@@ -1,7 +1,5 @@
 package com.company.project.core;
 
-import com.alibaba.fastjson.JSON;
-
 /**
  * 统一API响应结果封装
  */
@@ -35,10 +33,5 @@ public class Result<T> {
     public Result setData(T data) {
         this.data = data;
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return JSON.toJSONString(this);
     }
 }
