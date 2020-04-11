@@ -1,26 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
+import {Button} from 'antd';
 import './App.css';
+import Home from "./components/Home";
+import New from "./components/New";
+import ReactForm from "./components/ReactForm";
 
-function App() {
-  return (
+const App = () => (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <Button type="primary">Button</Button>
+        <h1>我就是纠结多久试试</h1>
+        <Home/>
+        <New/>
+        <ReactForm/>
     </div>
-  );
-}
+);
 
 export default App;
