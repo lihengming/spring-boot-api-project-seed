@@ -12,6 +12,6 @@
     <result column="ecologicalFactor" jdbcType="VARCHAR" property="ecologicalfactor" />
     <result column="unit" jdbcType="VARCHAR" property="unit" />
     <result column="standard" jdbcType="VARCHAR" property="standard" />
-    <result column="备注栏" jdbcType="VARCHAR" property="备注栏" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
   </resultMap>
 </mapper>

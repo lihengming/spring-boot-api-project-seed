@@ -23,7 +23,7 @@ public class Yuegangao {
 
     private String standard;
 
-    private String 备注栏;
+    private String comment;
 
     /**
      * @return Id
@@ -126,14 +126,14 @@ public class Yuegangao {
     /**
      * @return 备注栏
      */
-    public String get备注栏() {
-        return 备注栏;
+    public String getComment() {
+        return comment;
     }
 
     /**
      * @param 备注栏
      */
-    public void set备注栏(String 备注栏) {
-        this.备注栏 = 备注栏;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
