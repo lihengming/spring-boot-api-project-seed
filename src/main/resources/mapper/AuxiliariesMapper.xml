@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.AuxiliariesMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.Auxiliaries">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="sort" jdbcType="NVARCHAR" property="sort" />
+    <result column="name" jdbcType="NVARCHAR" property="name" />
+  </resultMap>
+</mapper>

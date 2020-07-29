@@ -18,14 +18,14 @@ import static com.company.project.core.ProjectConstant.*;
  */
 public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
-//    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/index";
 	private static final String JDBC_URL = "jdbc:sqlserver://172.16.10.51:1433;DatabaseName=yga_index";
-//	private static final String JDBC_USERNAME = "root";
 	private static final String JDBC_USERNAME = "yga_devp";
-//	private static final String JDBC_PASSWORD = "root";
 	private static final String JDBC_PASSWORD = "yga.devp501";
-//	private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 	private static final String JDBC_DIVER_CLASS_NAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+//    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/index";
+//	private static final String JDBC_USERNAME = "root";
+//	private static final String JDBC_PASSWORD = "root";
+//	private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
     private static final String PROJECT_PATH = System.getProperty("user.dir");//项目在硬盘上的基础路径
     private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";//模板位置

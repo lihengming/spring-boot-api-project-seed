@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.YgaIndexdataMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.YgaIndexdata">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="PSR" jdbcType="VARCHAR" property="psr" />
+    <result column="EcologicalFactor" jdbcType="VARCHAR" property="ecologicalfactor" />
+    <result column="IndexName" jdbcType="VARCHAR" property="indexname" />
+    <result column="Citation" jdbcType="VARCHAR" property="citation" />
+    <result column="IssueUnit" jdbcType="VARCHAR" property="issueunit" />
+    <result column="IssueYear" jdbcType="VARCHAR" property="issueyear" />
+    <result column="Comment" jdbcType="VARCHAR" property="comment" />
+  </resultMap>
+</mapper>

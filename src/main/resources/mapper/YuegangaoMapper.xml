@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.YuegangaoMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.Yuegangao">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="Id" jdbcType="INTEGER" property="id" />
+    <result column="psr" jdbcType="VARCHAR" property="psr" />
+    <result column="firstIndex" jdbcType="VARCHAR" property="firstindex" />
+    <result column="secondIndex" jdbcType="VARCHAR" property="secondindex" />
+    <result column="ecologicalFactor" jdbcType="VARCHAR" property="ecologicalfactor" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="standard" jdbcType="VARCHAR" property="standard" />
+    <result column="备注栏" jdbcType="VARCHAR" property="备注栏" />
+  </resultMap>
+</mapper>
