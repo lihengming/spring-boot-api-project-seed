@@ -12,6 +12,8 @@
     <result column="ecologicalFactor" jdbcType="VARCHAR" property="ecologicalfactor" />
     <result column="unit" jdbcType="VARCHAR" property="unit" />
     <result column="standard" jdbcType="VARCHAR" property="standard" />
+    <result column="currentValue" jdbcType="VARCHAR" property="currentvalue" />
+    <result column="finishTime" jdbcType="DATE" property="finishtime" />
     <result column="comment" jdbcType="VARCHAR" property="comment" />
   </resultMap>
 </mapper>

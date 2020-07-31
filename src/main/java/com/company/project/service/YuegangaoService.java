@@ -4,7 +4,7 @@ import com.company.project.core.Service;
 
 
 /**
- * Created by CodeGenerator on 2020/07/27.
+ * Created by CodeGenerator on 2020/07/30.
  */
 public interface YuegangaoService extends Service<Yuegangao> {
 

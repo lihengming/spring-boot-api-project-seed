@@ -109,19 +109,19 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         //接口签名认证拦截器，该签名认证比较简单，实际项目中可以使用Json Web Token或其他更好的方式替代。
         if (!"dev".equals(env)) { //开发环境忽略签名认证
-			/*
-			 * registry.addInterceptor(new HandlerInterceptorAdapter() {
-			 * 
-			 * @Override public boolean preHandle(HttpServletRequest request,
-			 * HttpServletResponse response, Object handler) throws Exception { //验证签名
-			 * boolean pass = validateSign(request); if (pass) { return true; } else {
-			 * logger.warn("签名认证失败，请求接口：{}，请求IP：{}，请求参数：{}", request.getRequestURI(),
-			 * getIpAddress(request), JSON.toJSONString(request.getParameterMap()));
-			 * 
-			 * Result result = new Result();
-			 * result.setCode(ResultCode.UNAUTHORIZED).setMessage("签名认证失败");
-			 * responseResult(response, result); return false; } } });
-			 */
+			
+//			  registry.addInterceptor(new HandlerInterceptorAdapter() {
+//			  
+//			  @Override public boolean preHandle(HttpServletRequest request,
+//			  HttpServletResponse response, Object handler) throws Exception { //验证签名
+//			  boolean pass = validateSign(request); if (pass) { return true; } else {
+//			  logger.warn("签名认证失败，请求接口：{}，请求IP：{}，请求参数：{}", request.getRequestURI(),
+//			  getIpAddress(request), JSON.toJSONString(request.getParameterMap()));
+//			  
+//			  Result result = new Result();
+//			  result.setCode(ResultCode.UNAUTHORIZED).setMessage("签名认证失败");
+//			  responseResult(response, result); return false; } } });
+			 
         }
     }
 
