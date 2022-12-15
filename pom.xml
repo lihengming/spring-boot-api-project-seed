@@ -48,7 +48,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>30.0-jre</version>
         </dependency>
         <!--MySQL JDBC驱动-->
         <dependency>
